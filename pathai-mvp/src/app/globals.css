@@ -1,40 +1,75 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import '@fontsource/plus-jakarta-sans/400.css';
+@import '@fontsource/plus-jakarta-sans/500.css';
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import "tailwindcss";
 
-:root {
-  --navy: #0D1B2A;
-  --teal: #0D9488;
-  --mint: #14B8A6;
-  --gold: #F59E0B;
+@theme {
+  --color-brand-50: #edfcf9;
+  --color-brand-100: #d2f7f1;
+  --color-brand-200: #a9ede4;
+  --color-brand-300: #6fddcf;
+  --color-brand-400: #35c4b4;
+  --color-brand-500: #1da899;
+  --color-brand-600: #17897c;
+  --color-brand-700: #186d64;
+  --color-brand-800: #185751;
+  --color-brand-900: #184944;
+
+  --color-surface: #f8fffe;
+  --color-surface-card: #ffffff;
+  --color-surface-muted: #f1faf9;
+  --color-surface-border: #d4f0ec;
+
+  --color-ink: #0d2b28;
+  --color-ink-secondary: #3d6460;
+  --color-ink-muted: #7ba8a3;
+  --color-ink-inverse: #ffffff;
+
+  --color-danger: #ef4444;
+  --color-danger-light: #fef2f2;
+  --color-danger-border: #fecaca;
+
+  --color-warning: #f59e0b;
+  --color-warning-light: #fffbeb;
+  --color-warning-border: #fde68a;
+
+  --color-success: #10b981;
+  --color-success-light: #ecfdf5;
+  --color-success-border: #a7f3d0;
+
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui;
 }
 
 body {
-  background-color: #F0FDFA;
-  color: #0D1B2A;
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
 }
 
+/* Base style utility overrides to match design system tokens */
 .btn-primary {
-  @apply bg-teal-600 hover:bg-teal-700 text-white font-semibold 
-         py-3 px-6 rounded-xl transition-all duration-200 
-         active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply bg-brand-400 hover:bg-brand-500 text-white font-semibold 
+         rounded-xl px-5 py-2.5 shadow-sm hover:shadow-md 
+         transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .btn-outline {
-  @apply border-2 border-teal-600 text-teal-600 hover:bg-teal-50 
-         font-semibold py-3 px-6 rounded-xl transition-all duration-200;
+  @apply bg-surface-muted hover:bg-brand-50 text-brand-600 font-medium 
+         rounded-xl px-5 py-2.5 border border-surface-border hover:border-brand-300 
+         transition-all duration-200 active:scale-95;
 }
 
 .card {
-  @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+  @apply bg-surface-card rounded-2xl border border-surface-border shadow-sm p-6;
 }
 
 .input-field {
-  @apply w-full border border-gray-200 rounded-xl px-4 py-3 
-         focus:outline-none focus:ring-2 focus:ring-teal-500 
-         focus:border-transparent text-gray-800 bg-white;
+  @apply bg-white border border-surface-border rounded-xl px-4 py-2.5 text-sm text-ink
+         focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400
+         placeholder:text-ink-muted transition-colors;
 }
 
 .section-header {
-  @apply text-xs font-bold tracking-widest text-teal-600 uppercase mb-1;
+  @apply border-l-4 border-brand-400 pl-3 text-lg font-semibold text-ink;
 }

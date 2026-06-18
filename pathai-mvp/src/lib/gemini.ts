@@ -1,5 +1,5 @@
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY!
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`
 
 export async function callGemini(prompt: string): Promise<string> {
   const response = await fetch(GEMINI_URL, {
@@ -9,7 +9,10 @@ export async function callGemini(prompt: string): Promise<string> {
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 1000,
+        maxOutputTokens: 4000,
+        thinkingConfig: {
+          thinkingBudget: 0
+        }
       }
     })
   })
