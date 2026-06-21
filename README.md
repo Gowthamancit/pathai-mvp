@@ -40,7 +40,7 @@ Ensure you have the following installed on your machine:
 
 ### Environment Setup
 
-Create a `.env.local` file in this directory and configure the following variables:
+Create a `.env.local` file in the `pathai-mvp` directory and configure the following variables:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
@@ -49,17 +49,22 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_api_key
 
 ### Installation
 
-1. Install dependencies:
+1. Navigate to the project directory:
+   ```bash
+   cd pathai-mvp
+   ```
+
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-2. Run the local development server:
+3. Run the local development server:
    ```bash
    npm run dev
    ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
