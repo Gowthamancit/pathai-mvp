@@ -1,22 +1,33 @@
 'use client'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Navbar() {
   const router = useRouter()
   const pathname = usePathname()
+  const { user, logout } = useAuth()
   const [language, setLanguage] = useState('en')
 
   useEffect(() => {
-    const user = localStorage.getItem('pathai_user')
-    if (user) {
-      const parsed = JSON.parse(user)
-      setLanguage(parsed.language || 'en')
+    const userProfile = localStorage.getItem('pathai_user')
+    if (userProfile) {
+      try {
+        const parsed = JSON.parse(userProfile)
+        setLanguage(parsed.language || 'en')
+      } catch (e) {
+        console.error(e)
+      }
     }
-  }, [pathname]) // Trigger update when route changes
+  }, [pathname, user]) // Trigger update when route or user changes
 
   // Don't show navbar on welcome page
   if (pathname === '/') return null
+
+  const handleLogout = async () => {
+    await logout()
+    router.push('/auth/login')
+  }
 
   return (
     <nav className="bg-white border-b border-surface-border shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-50">
@@ -36,9 +47,18 @@ export default function Navbar() {
            language === 'te' ? 'తెలుగు' :
            language === 'bn' ? 'বাংলা' : 'English'}
         </span>
-        <span className="text-[10px] font-bold text-ink-secondary bg-surface-muted border border-surface-border px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-          MVP Demo
-        </span>
+        {user ? (
+          <button
+            onClick={handleLogout}
+            className="text-xs font-bold text-danger bg-danger-light border border-danger-border px-3 py-1 rounded-full cursor-pointer hover:bg-red-100 transition-colors"
+          >
+            Logout
+          </button>
+        ) : (
+          <span className="text-[10px] font-bold text-ink-secondary bg-surface-muted border border-surface-border px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            MVP Demo
+          </span>
+        )}
       </div>
     </nav>
   )

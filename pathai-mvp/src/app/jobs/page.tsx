@@ -17,7 +17,7 @@ export default function JobsPage() {
 
     const userId = localStorage.getItem('pathai_user_id')
     if (!userId) {
-      router.push('/onboarding')
+      router.push('/auth/login')
       return
     }
 
@@ -104,7 +104,7 @@ export default function JobsPage() {
           <button
             onClick={() => {
               localStorage.clear()
-              router.push('/onboarding')
+              router.push('/auth/register')
             }}
             className="mt-6 px-5 py-2.5 border border-surface-border bg-surface-muted text-brand-600 rounded-xl text-sm font-semibold hover:bg-brand-50 hover:border-brand-300 transition-all duration-200"
           >

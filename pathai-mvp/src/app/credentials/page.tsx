@@ -15,7 +15,7 @@ export default function CredentialsPage() {
     setLoading(true)
     const userId = localStorage.getItem('pathai_user_id')
     if (!userId) {
-      router.push('/onboarding')
+      router.push('/auth/login')
       return
     }
 

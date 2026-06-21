@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         district: user.district,
         state: user.state
       },
-      jobs.map(job => ({
+      jobs.map((job: any) => ({
         title: job.title,
         employer: job.employer,
         district: job.district,

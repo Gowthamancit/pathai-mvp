@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
       .eq('trade', user.trade)
 
     const skillsWithQuestions = [
-      ...new Set(availableQuestions?.map(q => q.skill) || [])
-    ]
+      ...new Set(availableQuestions?.map((q: any) => q.skill as string) || [])
+    ] as string[]
 
     const prompt = PROMPTS.skillGapAnalysis(
       {

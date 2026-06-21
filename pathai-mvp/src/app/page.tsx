@@ -52,12 +52,20 @@ export default function WelcomePage() {
         </div>
         
         {/* CTA */}
-        <button
-          onClick={() => router.push('/onboarding')}
-          className="w-full bg-brand-400 hover:bg-brand-500 text-white font-semibold py-4 px-8 rounded-2xl text-lg shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
-        >
-          शुरू करें — Get Started
-        </button>
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => router.push('/auth/register')}
+            className="w-full bg-brand-400 hover:bg-brand-500 text-white font-semibold py-4 px-8 rounded-2xl text-lg shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
+          >
+            रजिस्टर — Register
+          </button>
+          <button
+            onClick={() => router.push('/auth/login')}
+            className="w-full border border-surface-border bg-white hover:bg-brand-50 text-brand-600 font-semibold py-4 px-8 rounded-2xl text-lg shadow-sm hover:shadow-md transition-all duration-200 active:scale-95"
+          >
+            लॉगिन — Login
+          </button>
+        </div>
         
         <p className="text-ink-muted text-xs mt-6 font-medium">
           Works offline · Free forever · Built for Bharat

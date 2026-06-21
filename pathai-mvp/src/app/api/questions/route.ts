@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const { data: questions, error } = await supabaseAdmin
+  let { data: questions, error } = await supabaseAdmin
     .from('questions')
     .select('*')
     .eq('trade', trade)
@@ -31,10 +31,21 @@ export async function GET(request: NextRequest) {
   }
 
   if (!questions || questions.length === 0) {
-    return NextResponse.json(
-      { error: `No questions found for ${trade} - ${skill}` },
-      { status: 404 }
-    )
+    const { data: fallbackQuestions, error: fallbackError } = await supabaseAdmin
+      .from('questions')
+      .select('*')
+      .eq('skill', skill)
+      .order('difficulty', { ascending: true })
+      .limit(limit)
+
+    if (!fallbackError && fallbackQuestions && fallbackQuestions.length > 0) {
+      questions = fallbackQuestions
+    } else {
+      return NextResponse.json(
+        { error: `No questions found for ${trade} - ${skill}` },
+        { status: 404 }
+      )
+    }
   }
 
   // Shuffle questions for variety
