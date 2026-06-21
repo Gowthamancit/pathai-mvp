@@ -18,7 +18,7 @@ export default function DashboardPage() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <LoadingSpinner message="Loading your dashboard..." />
       </div>
     )
@@ -49,71 +49,83 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex-1 bg-surface flex flex-col p-6 max-w-2xl mx-auto w-full">
-      
-      {/* User Greeting */}
-      <div className="mb-8 mt-2 pl-3 border-l-4 border-brand-400">
-        <h1 className="text-2xl font-bold tracking-tight text-ink">
-          {labels.greeting}
-        </h1>
-        <p className="text-sm font-semibold text-brand-600 mt-1">
-          {labels.subtitle}
-        </p>
-      </div>
-
-      {/* Action Cards stack */}
-      <div className="flex flex-col gap-6">
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-lg mx-auto px-4 py-6">
         
-        {/* Card 1: Jobs */}
-        <div className="bg-surface-card p-6 rounded-2xl border border-surface-border shadow-sm flex flex-col gap-4 hover:shadow-md hover:border-brand-300 transition-all duration-200">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-brand-50 border border-brand-100 rounded-xl flex items-center justify-center text-brand-600">
-              <Briefcase className="w-6 h-6" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-ink">{labels.jobTitle}</h2>
-              <p className="text-xs text-ink-secondary">{labels.jobSubtitle}</p>
-            </div>
-          </div>
-          <button
+        {/* User Greeting */}
+        <div className="mb-8 mt-2 pl-4 border-l-4 border-teal-500">
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+            {labels.greeting}
+          </h1>
+          <p className="text-sm text-teal-600 font-semibold mt-0.5">
+            {labels.subtitle}
+          </p>
+        </div>
+
+        {/* Action Cards stack */}
+        <div className="space-y-4">
+          
+          {/* Card 1: Jobs */}
+          <div 
             onClick={() => router.push('/jobs')}
-            className="w-full py-3 bg-brand-400 hover:bg-brand-500 text-white font-semibold rounded-xl text-sm transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md"
+            className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md hover:border-teal-100 transition-all duration-200 cursor-pointer group"
           >
-            {labels.jobBtn}
-          </button>
-        </div>
-
-        {/* Card 2: Credentials */}
-        <div className="bg-surface-card p-6 rounded-2xl border border-surface-border shadow-sm flex flex-col gap-4 hover:shadow-md hover:border-brand-300 transition-all duration-200">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-brand-50 border border-brand-100 rounded-xl flex items-center justify-center text-brand-600">
-              <Award className="w-6 h-6" />
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-teal-50 border border-teal-100 rounded-xl flex items-center justify-center text-teal-600 group-hover:bg-teal-100 transition-colors shrink-0">
+                <Briefcase className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-900 mb-1">{labels.jobTitle}</h2>
+                <p className="text-sm text-slate-500">{labels.jobSubtitle}</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-semibold text-ink">{labels.credTitle}</h2>
-              <p className="text-xs text-ink-secondary">{labels.credSubtitle}</p>
-            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                router.push('/jobs')
+              }}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl text-sm transition-all duration-150 active:scale-95"
+            >
+              {labels.jobBtn}
+            </button>
           </div>
-          <button
+
+          {/* Card 2: Credentials */}
+          <div 
             onClick={() => router.push('/credentials')}
-            className="w-full py-3 bg-brand-400 hover:bg-brand-500 text-white font-semibold rounded-xl text-sm transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md"
+            className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md hover:border-teal-100 transition-all duration-200 cursor-pointer group"
           >
-            {labels.credBtn}
-          </button>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-amber-50 border border-amber-100 rounded-xl flex items-center justify-center text-amber-500 group-hover:bg-amber-100 transition-colors shrink-0">
+                <Award className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-900 mb-1">{labels.credTitle}</h2>
+                <p className="text-sm text-slate-500">{labels.credSubtitle}</p>
+              </div>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                router.push('/credentials')
+              }}
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-xl text-sm transition-all duration-150 active:scale-95"
+            >
+              {labels.credBtn}
+            </button>
+          </div>
+
         </div>
 
-      </div>
-
-      {/* Start Over Button */}
-      <div className="mt-auto pt-10 text-center">
+        {/* Start Over Button */}
         <button
           onClick={handleStartOver}
-          className="text-xs text-ink-muted hover:text-danger underline font-semibold transition-all duration-200"
+          className="text-xs text-slate-400 hover:text-slate-600 underline underline-offset-2 transition-colors mt-8 block text-center mx-auto"
         >
           {labels.startOver}
         </button>
-      </div>
 
+      </div>
     </div>
   )
 }

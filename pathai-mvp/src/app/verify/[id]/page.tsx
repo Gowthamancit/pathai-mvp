@@ -1,175 +1,232 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { CheckCircle2, XCircle, AlertTriangle, ExternalLink } from 'lucide-react'
-import LoadingSpinner from '@/components/LoadingSpinner'
+
+interface VerifiedCredential {
+  id: string
+  holder_name: string
+  skill: string
+  trade: string
+  score_percent: number
+  proficiency_level: string
+  issued_at: string
+  issued_by: string
+}
+
+type VerifyStatus = 'loading' | 'verified' | 'not_found' | 'invalid'
 
 export default function VerifyPage() {
   const params = useParams()
   const id = params.id as string
-
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [data, setData] = useState<any>(null)
-
-  const verifyCredential = async () => {
-    if (!id) {
-      setError('Credential ID is missing.')
-      setLoading(false)
-      return
-    }
-
-    setLoading(true)
-    setError('')
-
-    try {
-      const response = await fetch(`/api/credentials/${id}`)
-      const resData = await response.json()
-
-      // Handle 404 cleanly by setting data state with status NOT_FOUND
-      if (response.status === 404) {
-        setData({ status: 'NOT_FOUND', message: 'Credential not found.' })
-      } else if (!response.ok) {
-        throw new Error(resData.message || 'Verification failed')
-      } else {
-        setData(resData)
-      }
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const [status, setStatus] = useState<VerifyStatus>('loading')
+  const [credential, setCredential] = useState<VerifiedCredential | null>(null)
 
   useEffect(() => {
-    verifyCredential()
+    if (!id) return
+
+    const verify = async () => {
+      try {
+        const res = await fetch(`/api/credentials/${id}`)
+        const data = await res.json()
+
+        if (data.status === 'VERIFIED') {
+          setStatus('verified')
+          setCredential(data.credential)
+        } else if (data.status === 'INVALID') {
+          setStatus('invalid')
+        } else {
+          setStatus('not_found')
+        }
+      } catch {
+        setStatus('not_found')
+      }
+    }
+
+    verify()
   }, [id])
 
-  if (loading) {
+  if (status === 'loading') {
     return (
-      <div className="flex-1 bg-surface flex items-center justify-center p-6">
-        <LoadingSpinner message="Verifying credential authenticity..." />
+      <div className="min-h-screen bg-[#0D1B2A] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-teal-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-teal-400 font-medium">
+            Verifying credential...
+          </p>
+        </div>
       </div>
     )
   }
 
-  if (error) {
+  if (status === 'not_found') {
     return (
-      <div className="flex-1 bg-surface p-6 flex flex-col items-center justify-center text-center gap-4">
-        <div className="bg-danger-light text-danger p-6 rounded-2xl border border-danger-border w-full max-w-sm">
-          <p className="font-bold text-lg mb-2">Verification Error</p>
-          <p className="text-sm">{error}</p>
+      <div className="min-h-screen bg-[#0D1B2A] flex items-center justify-center px-6">
+        <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">❌</span>
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
+            Credential Not Found
+          </h1>
+          <p className="text-gray-500 text-sm">
+            This credential ID does not exist or may have been removed.
+          </p>
+          <p className="text-xs text-gray-400 mt-4 font-mono break-all">
+            ID: {id}
+          </p>
         </div>
-        <button
-          onClick={verifyCredential}
-          className="px-6 py-2.5 bg-brand-400 hover:bg-brand-500 text-white font-semibold rounded-xl text-sm shadow-sm hover:shadow-md transition-all duration-200 active:scale-95"
-        >
-          Retry
-        </button>
       </div>
     )
   }
 
-  const status = data?.status
-
-  return (
-    <div className="flex-1 bg-surface flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto w-full">
-      
-      <div className="bg-surface-card rounded-3xl border border-surface-border shadow-xl p-8 w-full max-w-md flex flex-col items-center gap-6 hover:shadow-2xl transition-all duration-300">
-        
-        {/* PathAI Logo */}
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 bg-brand-400 rounded-lg flex items-center justify-center text-white font-black text-sm">P</div>
-          <span className="font-extrabold text-lg text-ink tracking-tight">PathAI Verify</span>
+  if (status === 'invalid') {
+    return (
+      <div className="min-h-screen bg-[#0D1B2A] flex items-center justify-center px-6">
+        <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
+            Credential Revoked
+          </h1>
+          <p className="text-gray-500 text-sm">
+            This credential has been revoked and is no longer valid.
+          </p>
         </div>
+      </div>
+    )
+  }
 
-        {/* VERIFIED STATUS */}
-        {status === 'VERIFIED' && (
-          <div className="flex flex-col items-center gap-6 w-full">
-            <CheckCircle2 className="w-16 h-16 text-success" />
+  if (status === 'verified' && credential) {
+    const issuedDate = new Date(credential.issued_at).toLocaleDateString(
+      'en-IN', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }
+    )
+
+    return (
+      <div className="min-h-screen bg-[#0D1B2A] flex items-center justify-center px-6 py-10">
+        <div className="max-w-sm w-full">
+
+          {/* Verified badge */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 bg-emerald-500 text-white px-5 py-2.5 rounded-full text-sm font-black shadow-lg shadow-emerald-900/30 tracking-wide mb-6">
+              <span>✓</span>
+              <span>VERIFIED CREDENTIAL</span>
+            </div>
+          </div>
+
+          {/* Main credential card */}
+          <div className="bg-white rounded-3xl shadow-2xl shadow-black/40 overflow-hidden border border-white/10">
             
-            <div className="text-center">
-              <h2 className="text-xl font-bold text-success tracking-tight uppercase">
-                Verified Genuine ✓
-              </h2>
-              <p className="text-xs text-ink-muted mt-1 max-w-[280px] mx-auto font-semibold">
-                This skill credential is authentic and was officially issued by PathAI.
-              </p>
+            {/* Card header */}
+            <div className="bg-[#0D1B2A] px-6 pt-6 pb-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-11 h-11 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
+                  <span className="text-white font-black text-lg">P</span>
+                </div>
+                <div>
+                  <p className="text-teal-400 text-xs font-black tracking-widest uppercase">
+                    PathAI
+                  </p>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    Skill Certificate
+                  </p>
+                </div>
+                <div className="ml-auto">
+                  <span className="ml-auto text-emerald-400 text-xs font-bold border border-emerald-500/50 bg-emerald-500/10 px-3 py-1.5 rounded-full">
+                    ✓ AI Verified
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Credential Data details block */}
-            <div className="w-full bg-surface-muted border border-surface-border rounded-2xl p-5 text-left flex flex-col gap-4 text-xs">
+            {/* Card body */}
+            <div className="px-6 py-5 space-y-4">
               
-              <div className="flex justify-between items-center py-1 border-b border-surface-border/50">
-                <span className="text-ink-muted font-bold uppercase tracking-wider text-[9px]">Holder Name</span>
-                <span className="text-ink font-bold">{data.credential.holder_name}</span>
+              {/* Holder name */}
+              <div>
+                <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-1">
+                  AWARDED TO
+                </p>
+                <p className="text-3xl font-black text-slate-900 tracking-tight">
+                  {credential.holder_name}
+                </p>
               </div>
 
-              <div className="flex justify-between items-center py-1 border-b border-surface-border/50">
-                <span className="text-ink-muted font-bold uppercase tracking-wider text-[9px]">Skill</span>
-                <span className="text-brand-600 font-bold">{data.credential.skill}</span>
+              {/* Skill */}
+              <div>
+                <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-1">
+                  SKILL CERTIFIED
+                </p>
+                <p className="text-xl font-bold text-slate-900 capitalize">
+                  {credential.skill}
+                </p>
+                <p className="text-sm text-slate-500 mt-0.5">
+                  {credential.trade} Trade
+                </p>
               </div>
 
-              <div className="flex justify-between items-center py-1 border-b border-surface-border/50">
-                <span className="text-ink-muted font-bold uppercase tracking-wider text-[9px]">Trade</span>
-                <span className="text-ink font-bold">{data.credential.trade}</span>
+              {/* Score and level */}
+              <div className="flex gap-3">
+                <div className="flex-1 bg-gradient-to-br from-teal-50 to-teal-100 border border-teal-200 rounded-2xl p-4 text-center">
+                  <p className="text-3xl font-black text-teal-600">
+                    {credential.score_percent}%
+                  </p>
+                  <p className="text-xs text-teal-500 font-semibold mt-1">
+                    Score
+                  </p>
+                </div>
+                <div className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
+                  <p className="text-base font-black text-slate-800">
+                    {credential.proficiency_level}
+                  </p>
+                  <p className="text-xs text-slate-400 font-semibold mt-1">
+                    Level
+                  </p>
+                </div>
               </div>
 
-              <div className="flex justify-between items-center py-1 border-b border-surface-border/50">
-                <span className="text-ink-muted font-bold uppercase tracking-wider text-[9px]">Proficiency</span>
-                <span className="text-brand-900 font-bold">{data.credential.proficiency_level}</span>
+              {/* Date */}
+              <div className="flex justify-between text-xs text-slate-400 pt-3 border-t border-slate-100 mt-1">
+                <span>Issued on {issuedDate}</span>
+                <span>{credential.issued_by}</span>
               </div>
 
-              <div className="flex justify-between items-center py-1 border-b border-surface-border/50">
-                <span className="text-ink-muted font-bold uppercase tracking-wider text-[9px]">Score</span>
-                <span className="text-ink font-extrabold">{data.credential.score_percent}%</span>
+              {/* Credential ID */}
+              <div className="bg-slate-50 rounded-2xl p-4 mt-1">
+                <p className="text-xs text-slate-400 mb-2 font-bold tracking-widest uppercase">
+                  Credential ID
+                </p>
+                <p className="text-xs font-mono text-slate-600 break-all leading-relaxed">
+                  {credential.id}
+                </p>
               </div>
 
-              <div className="flex justify-between items-center py-1">
-                <span className="text-ink-muted font-bold uppercase tracking-wider text-[9px]">Date Issued</span>
-                <span className="text-ink font-semibold">
-                  {new Date(data.credential.issued_at).toLocaleDateString()}
-                </span>
-              </div>
             </div>
 
-            <div className="text-[10px] text-ink-muted font-bold tracking-wide uppercase border-t border-surface-border w-full pt-4">
-              Issuer: {data.credential.issued_by}
-            </div>
-          </div>
-        )}
-
-        {/* NOT_FOUND STATUS */}
-        {status === 'NOT_FOUND' && (
-          <div className="flex flex-col items-center gap-4 py-4 w-full">
-            <XCircle className="w-16 h-16 text-danger" />
-            <div>
-              <h2 className="text-xl font-bold text-danger tracking-tight uppercase">
-                Invalid Credential
-              </h2>
-              <p className="text-xs text-ink-secondary mt-2 max-w-xs leading-relaxed font-semibold">
-                {data.message || 'This credential does not exist or has been deleted.'}
+            {/* Verified footer */}
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-t border-emerald-100 px-6 py-4 text-center">
+              <p className="text-emerald-700 text-xs font-bold">
+                ✓ This credential is genuine and was issued by PathAI
+              </p>
+              <p className="text-emerald-600 text-xs mt-0.5">
+                Verified on {new Date().toLocaleDateString('en-IN')}
               </p>
             </div>
-          </div>
-        )}
 
-        {/* INVALID / REVOKED STATUS */}
-        {status === 'INVALID' && (
-          <div className="flex flex-col items-center gap-4 py-4 w-full">
-            <AlertTriangle className="w-16 h-16 text-warning" />
-            <div>
-              <h2 className="text-xl font-bold text-warning tracking-tight uppercase">
-                Revoked Credential
-              </h2>
-              <p className="text-xs text-ink-secondary mt-2 max-w-xs leading-relaxed font-semibold">
-                {data.message || 'This credential has been marked invalid or revoked.'}
-              </p>
-            </div>
           </div>
-        )}
 
+          {/* Bottom note */}
+          <p className="text-center text-gray-500 text-xs mt-6">
+            SahAI for Shiksha Hackathon 2026
+          </p>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  return null
 }

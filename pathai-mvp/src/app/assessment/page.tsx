@@ -151,7 +151,7 @@ function AssessmentContent() {
 
   if (loading) {
     return (
-      <div className="flex-1 bg-surface flex items-center justify-center p-6">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <LoadingSpinner message="Grading and preparing assessment..." />
       </div>
     )
@@ -159,17 +159,17 @@ function AssessmentContent() {
 
   if (error || questions.length === 0) {
     return (
-      <div className="flex-1 bg-surface p-6 flex flex-col items-center justify-center text-center gap-4">
-        <div className="bg-danger-light border border-danger-border rounded-2xl p-6 text-center w-full max-w-sm">
-          <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-danger mx-auto mb-3">
+      <div className="min-h-screen bg-slate-50 p-6 flex flex-col items-center justify-center text-center gap-4">
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center w-full max-w-sm">
+          <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-500 mx-auto mb-3">
             <AlertCircle className="w-6 h-6" />
           </div>
-          <p className="font-bold text-lg text-danger mb-1">Error</p>
+          <p className="font-bold text-lg text-red-500 mb-1">Error</p>
           <p className="text-sm text-red-600">{error || 'Could not load questions.'}</p>
         </div>
         <button
           onClick={fetchQuestions}
-          className="px-6 py-2.5 bg-brand-400 hover:bg-brand-500 text-white font-semibold rounded-xl text-sm shadow-sm hover:shadow-md transition-all duration-200 active:scale-95"
+          className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-sm shadow-sm hover:shadow-md transition-all duration-200 active:scale-95"
         >
           Retry
         </button>
@@ -188,122 +188,136 @@ function AssessmentContent() {
   const correctLetter = currentQuestion.correct_option.toLowerCase()
 
   return (
-    <div className="flex-1 bg-surface flex flex-col p-6 max-w-2xl mx-auto w-full">
-      
-      {/* Progress header */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center text-xs font-bold text-ink-muted uppercase tracking-widest mb-2">
-          <span>{skill} Test</span>
-          <span>Question {currentIndex + 1} of {questions.length}</span>
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-lg mx-auto px-4 py-5">
+        
+        {/* Progress header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4 text-xs font-bold tracking-widest uppercase text-slate-400">
+            <span>{skill} Test</span>
+            <span>Question {currentIndex + 1} of {questions.length}</span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+            <div 
+              className="bg-gradient-to-r from-teal-400 to-teal-600 h-2 rounded-full transition-all duration-500"
+              style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
+            />
+          </div>
         </div>
-        <div className="w-full bg-surface-muted h-2 rounded-full overflow-hidden border border-surface-border">
-          <div 
-            className="bg-brand-400 h-full transition-all duration-300"
-            style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
-          />
+
+        {/* Question Card */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-5">
+          <h2 className="text-base font-bold text-slate-900 leading-relaxed">
+            {currentQuestion.question_text}
+          </h2>
         </div>
-      </div>
 
-      {/* Question Text */}
-      <div className="bg-surface-card border border-surface-border p-6 rounded-2xl shadow-sm mb-6">
-        <h2 className="text-base font-bold text-ink leading-snug">
-          {currentQuestion.question_text}
-        </h2>
-      </div>
+        {/* Option Buttons */}
+        <div className="space-y-3">
+          {options.map((opt, i) => {
+            const isSelected = selectedOption === i
+            const isCorrect = opt.letter === correctLetter
+            
+            let btnClasses = "w-full flex items-center justify-between gap-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-teal-300 rounded-2xl px-5 py-4 text-left transition-all duration-150 group"
+            let badgeClasses = "w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-black text-slate-500 flex-shrink-0 group-hover:bg-teal-50 group-hover:border-teal-200 group-hover:text-teal-600 transition-colors"
+            let textClasses = "text-sm font-semibold text-slate-700 group-hover:text-slate-900"
+            let icon = null
 
-      {/* Option Buttons */}
-      <div className="flex flex-col gap-3">
-        {options.map((opt, i) => {
-          const isSelected = selectedOption === i
-          const isCorrect = opt.letter === correctLetter
-          
-          let cardStyle = 'border-surface-border bg-white text-ink hover:border-brand-300'
-          let icon = null
-
-          if (submitted) {
-            if (isCorrect) {
-              cardStyle = 'border-success bg-success-light text-success'
-              icon = <CheckCircle2 className="w-5 h-5 text-success" />
-            } else if (isSelected && !isCorrect) {
-              cardStyle = 'border-danger bg-danger-light text-danger'
-              icon = <XCircle className="w-5 h-5 text-danger" />
-            } else {
-              cardStyle = 'border-surface-border bg-surface-muted text-ink-muted opacity-60'
+            if (submitted) {
+              if (isCorrect) {
+                btnClasses += " !border-emerald-500 !bg-emerald-50"
+                badgeClasses += " !bg-emerald-500 !border-emerald-500 !text-white"
+                textClasses += " !text-emerald-800"
+                icon = <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+              } else if (isSelected && !isCorrect) {
+                btnClasses += " !border-red-400 !bg-red-50"
+                badgeClasses += " !bg-red-500 !border-red-500 !text-white"
+                textClasses += " !text-red-800"
+                icon = <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+              } else {
+                btnClasses += " opacity-60 pointer-events-none"
+                badgeClasses += " opacity-60"
+                textClasses += " opacity-60"
+              }
+            } else if (isSelected) {
+              btnClasses += " !border-teal-500 !bg-teal-50"
+              badgeClasses += " !bg-teal-500 !border-teal-500 !text-white"
+              textClasses += " !text-teal-800"
             }
-          } else if (isSelected) {
-            cardStyle = 'border-brand-400 bg-brand-50/50 text-ink shadow-sm'
-          }
 
-          return (
-            <div key={opt.key} className="flex gap-2 items-center w-full">
-              <button
-                type="button"
-                disabled={submitted}
-                onClick={() => setSelectedOption(i)}
-                className={`flex-1 py-4 px-5 rounded-2xl border text-left font-bold text-sm transition-all duration-200 flex justify-between items-center ${cardStyle}`}
-              >
-                <div className="flex items-start gap-3">
-                  <span className="uppercase text-ink-muted font-black mr-1">{opt.letter}.</span>
-                  <span>{opt.text}</span>
-                </div>
-                {icon}
-              </button>
-
-              {/* Voice button */}
-              {recognition && !submitted && (
+            return (
+              <div key={opt.key} className="flex gap-2 items-center w-full">
                 <button
                   type="button"
-                  onClick={() => startVoiceListening(i)}
-                  className={`p-4 rounded-2xl border flex items-center justify-center transition-all duration-200 active:scale-95 ${
-                    listeningOption === i
-                      ? 'bg-danger text-white animate-pulse border-danger'
-                      : 'bg-white text-brand-600 border-surface-border hover:bg-brand-50 hover:border-brand-300'
-                  }`}
+                  disabled={submitted}
+                  onClick={() => setSelectedOption(i)}
+                  className={btnClasses}
                 >
-                  <Mic className="w-4 h-4" />
+                  <div className="flex items-center gap-3">
+                    <span className={badgeClasses}>{opt.letter.toUpperCase()}</span>
+                    <span className={textClasses}>{opt.text}</span>
+                  </div>
+                  {icon}
                 </button>
-              )}
-            </div>
-          )
-        })}
-      </div>
 
-      {/* Listening Banner */}
-      {listeningOption !== null && (
-        <div className="mt-4 bg-brand-50 text-brand-700 px-4 py-2 rounded-xl text-center text-xs font-bold animate-pulse border border-brand-100 flex items-center justify-center gap-1.5">
-          <Mic className="w-3.5 h-3.5" />
-          <span>Listening... Say &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, or &quot;D&quot;</span>
+                {/* Voice button */}
+                {recognition && !submitted && (
+                  <button
+                    type="button"
+                    onClick={() => startVoiceListening(i)}
+                    className={`ml-auto w-8 h-8 rounded-xl border flex items-center justify-center transition-all flex-shrink-0 ${
+                      listeningOption === i
+                        ? 'bg-red-500 text-white animate-pulse border-red-500'
+                        : 'border-slate-200 text-slate-400 hover:text-teal-500 hover:border-teal-300 hover:bg-teal-50'
+                    }`}
+                  >
+                    <Mic className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            )
+          })}
         </div>
-      )}
 
-      {/* Explanation block */}
-      {submitted && (
-        <div className="mt-6 bg-brand-50 border border-brand-100 rounded-2xl p-5 text-xs text-brand-800 leading-relaxed shadow-sm">
-          <p className="font-bold mb-1 text-brand-900">Explanation:</p>
-          <p>{currentQuestion.explanation || 'No additional explanation available.'}</p>
-        </div>
-      )}
-
-      {/* Action buttons at bottom */}
-      <div className="mt-auto pt-8">
-        {!submitted ? (
-          <button
-            onClick={handleSubmitAnswer}
-            disabled={selectedOption === null}
-            className="w-full py-4 bg-brand-900 hover:bg-brand-950 text-white disabled:opacity-40 font-semibold rounded-2xl text-lg transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md disabled:cursor-not-allowed"
-          >
-            Submit Answer
-          </button>
-        ) : (
-          <button
-            onClick={handleNextQuestion}
-            className="w-full py-4 bg-brand-400 hover:bg-brand-500 text-white font-semibold rounded-2xl text-lg transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md"
-          >
-            {currentIndex + 1 < questions.length ? 'Next Question' : 'View Results'}
-          </button>
+        {/* Listening Banner */}
+        {listeningOption !== null && (
+          <div className="mt-4 bg-teal-50 text-teal-700 px-4 py-2 rounded-xl text-center text-xs font-bold animate-pulse border border-teal-200 flex items-center justify-center gap-1.5">
+            <Mic className="w-3.5 h-3.5" />
+            <span>Listening... Say &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, or &quot;D&quot;</span>
+          </div>
         )}
-      </div>
 
+        {/* Explanation block */}
+        {submitted && (
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mt-4 text-sm text-blue-800 leading-relaxed">
+            <p className="font-bold mb-1 text-blue-900">Explanation:</p>
+            <p>{currentQuestion.explanation || 'No additional explanation available.'}</p>
+          </div>
+        )}
+
+        {/* Action buttons at bottom */}
+        <div className="pt-8">
+          {!submitted ? (
+            <button
+              onClick={handleSubmitAnswer}
+              disabled={selectedOption === null}
+              className={`w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white font-bold py-4 rounded-2xl text-sm transition-all duration-150 active:scale-95 shadow-md shadow-teal-100 mt-5 ${
+                selectedOption === null ? 'opacity-40 cursor-not-allowed active:scale-100' : ''
+              }`}
+            >
+              Submit Answer
+            </button>
+          ) : (
+            <button
+              onClick={handleNextQuestion}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl text-sm transition-all duration-150 active:scale-95 mt-3"
+            >
+              {currentIndex + 1 < questions.length ? 'Next Question' : 'View Results'}
+            </button>
+          )}
+        </div>
+
+      </div>
     </div>
   )
 }
@@ -311,7 +325,7 @@ function AssessmentContent() {
 export default function AssessmentPage() {
   return (
     <Suspense fallback={
-      <div className="flex-1 bg-surface flex items-center justify-center p-6">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <LoadingSpinner message="Loading assessment..." />
       </div>
     }>

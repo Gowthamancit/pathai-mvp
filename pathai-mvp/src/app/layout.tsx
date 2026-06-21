@@ -1,10 +1,15 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Manrope } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import { AuthProvider } from '@/context/AuthContext'
 
-const inter = Inter({ subsets: ['latin'] })
+const manrope = Manrope({ 
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-manrope',
+  display: 'swap'
+})
 
 export const metadata: Metadata = {
   title: 'PathAI — Vernacular AI Career Navigator',
@@ -18,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-slate-900 flex justify-center min-h-screen`}>
+      <body className={`${manrope.className} antialiased bg-slate-900 flex justify-center min-h-screen`}>
         <div className="w-full max-w-[430px] min-h-screen bg-white flex flex-col shadow-2xl relative">
           <AuthProvider>
             <Navbar />
