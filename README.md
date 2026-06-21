@@ -85,3 +85,6 @@ When deploying the application to Vercel or other platforms, configure the setti
 
 4. **Environment Variables**:
    Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` under the project settings environment variables.
+   
+5. **Deployed URL**:
+   [https://pathai-mvp.vercel.app/](https://pathai-mvp.vercel.app/)
